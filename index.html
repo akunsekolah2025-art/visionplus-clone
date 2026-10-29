@@ -1,0 +1,755 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<link rel="icon" type="image/png" href="https://upload.wikimedia.org/wikipedia/id/6/62/Logo_Vision%2B_App.png">
+  
+  <link rel="apple-touch-icon" href="https://upload.wikimedia.org/wikipedia/id/6/62/Logo_Vision%2B_App.png">
+
+    <title>Vision+ Clone — Live TV Indonesia</title>
+    <meta name="theme-color" content="#0b0c10">
+    <meta name="description" content="Portal kanal TV Indonesia dengan pencarian, favorit, dan tampilan responsif.">
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/svg+xml" href="icon.svg">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --bg-color: #0b0c10;
+            --card-bg: #1f2833;
+            --text-color: #ffffff;
+            --text-muted: #c5c6c7;
+            --primary-color: #00e5ff;
+            --accent-color: #ff007f;
+            --nav-bg: rgba(31, 40, 51, 0.75);
+        }
+
+        [data-theme="light"] {
+            --bg-color: #f4f6f9;
+            --card-bg: #ffffff;
+            --text-color: #1f2833;
+            --text-muted: #757575;
+            --primary-color: #0056b3;
+            --accent-color: #d80064;
+            --nav-bg: rgba(255, 255, 255, 0.85);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+            transition: background-color 0.3s, color 0.3s, transform 0.2s;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            overflow-x: hidden;
+        }
+
+        /* Navbar Premium Glassmorphism */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 5%;
+            background-color: var(--nav-bg);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            font-size: 20px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .logo span {
+            color: var(--primary-color);
+        }
+
+        .theme-toggle {
+            background: none;
+            border: none;
+            color: var(--text-color);
+            font-size: 18px;
+            cursor: pointer;
+            padding: 10px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Main Content */
+        main {
+            padding: 20px 5%;
+        }
+
+        /* Responsive Hero Banner */
+        .hero {
+            margin-bottom: 30px;
+            background: linear-gradient(135deg, rgba(0,229,255,0.8), rgba(255,0,127,0.8)), url('https://source.unsplash.com/random/1200x400/?cinema,tv') no-repeat center/cover;
+            background-blend-mode: overlay;
+            padding: 30px 20px;
+            border-radius: 12px;
+            color: #fff;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        .hero h1 {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .hero p {
+            font-size: 13px;
+            opacity: 0.9;
+            max-width: 600px;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            position: relative;
+            padding-left: 12px;
+        }
+
+        .section-title::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 15%;
+            height: 70%;
+            width: 4px;
+            background-color: var(--primary-color);
+            border-radius: 2px;
+        }
+
+        /* Grid & Horizontal Scroll Mobile Solution */
+        .grid-channels {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 20px;
+        }
+
+        .channel-card {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+            display: flex;
+            flex-direction: column;
+            text-decoration: none;
+            color: inherit;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .channel-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--primary-color);
+            box-shadow: 0 8px 25px rgba(0, 229, 255, 0.25);
+        }
+
+        /* Khusus Logo: Tetap bersih & proporsional */
+        .logo-container {
+            height: 110px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #ffffff; 
+            padding: 15px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .logo-container img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+
+        .channel-info {
+            padding: 12px;
+            text-align: center;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            background: linear-gradient(to bottom, transparent, rgba(0,0,0,0.05));
+        }
+
+        .channel-name {
+            font-weight: 500;
+            font-size: 14px;
+            margin-bottom: 8px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .btn-watch {
+            background: linear-gradient(90deg, var(--primary-color), #00b4d8);
+            color: #fff;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            display: inline-block;
+            box-shadow: 0 4px 10px rgba(0, 229, 255, 0.2);
+        }
+
+        [data-theme="light"] .btn-watch {
+            background: var(--primary-color);
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 25px;
+            color: var(--text-muted);
+            font-size: 12px;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            margin-top: 40px;
+        }
+
+
+        /* Fitur tambahan */
+        header { gap: 16px; }
+        .header-actions { display:flex; align-items:center; gap:8px; }
+        .icon-action {
+            border: 1px solid rgba(255,255,255,.12);
+            background: var(--card-bg); color: var(--text-color);
+            width: 42px; height: 42px; border-radius: 14px;
+            display:inline-flex; align-items:center; justify-content:center;
+            cursor:pointer; font-size:16px;
+        }
+        .icon-action:hover, .icon-action:focus-visible {
+            border-color:var(--primary-color); transform:translateY(-2px);
+            outline: none; box-shadow:0 0 0 3px rgba(0,229,255,.12);
+        }
+        .hero-carousel { position:relative; overflow:hidden; min-height:220px; }
+        .hero-slide {
+            display:none; min-height:220px; padding:34px 28px 58px;
+            border-radius:16px; color:#fff; position:relative;
+            background-size:cover; background-position:center;
+            isolation:isolate;
+        }
+        .hero-slide::before {
+            content:""; position:absolute; inset:0; z-index:-1;
+            background:linear-gradient(100deg,rgba(5,8,18,.92),rgba(5,8,18,.45),rgba(5,8,18,.12));
+        }
+        .hero-slide.active { display:flex; flex-direction:column; justify-content:center; animation:slideIn .45s ease; }
+        .hero-slide h1 { font-size:clamp(24px,3vw,38px); line-height:1.2; margin-bottom:10px; max-width:650px; }
+        .hero-slide p { font-size:14px; max-width:620px; line-height:1.7; }
+        .hero-kicker { display:inline-flex; align-items:center; gap:8px; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:1.5px; margin-bottom:12px; color:#8df4ff; }
+        .hero-controls { position:absolute; right:18px; bottom:16px; display:flex; gap:8px; align-items:center; z-index:2; }
+        .hero-controls button { border:1px solid rgba(255,255,255,.3); background:rgba(10,15,25,.6); color:#fff; width:34px; height:34px; border-radius:50%; cursor:pointer; }
+        .hero-dots { display:flex; gap:6px; margin:0 4px; }
+        .hero-dots button { width:8px; height:8px; padding:0; border:0; background:rgba(255,255,255,.45); }
+        .hero-dots button.active { width:22px; border-radius:10px; background:#00e5ff; }
+        @keyframes slideIn { from { opacity:.45; transform:translateX(8px); } to { opacity:1; transform:translateX(0); } }
+        .channel-tools { display:flex; flex-wrap:wrap; gap:12px; align-items:center; margin:22px 0 18px; }
+        .search-wrap { position:relative; flex:1 1 260px; min-width:0; }
+        .search-wrap i { position:absolute; left:15px; top:50%; transform:translateY(-50%); color:var(--text-muted); }
+        #channelSearch { width:100%; padding:13px 15px 13px 43px; border:1px solid rgba(128,128,128,.28); border-radius:14px; background:var(--card-bg); color:var(--text-color); outline:none; font-size:14px; }
+        #channelSearch:focus { border-color:var(--primary-color); box-shadow:0 0 0 3px rgba(0,229,255,.12); }
+        .filter-btn { border:1px solid rgba(128,128,128,.25); background:var(--card-bg); color:var(--text-color); padding:12px 15px; border-radius:13px; cursor:pointer; font-size:13px; font-weight:600; }
+        .filter-btn.active { background:var(--primary-color); border-color:var(--primary-color); color:#061018; }
+        .results-line { color:var(--text-muted); font-size:12px; margin:-4px 0 14px; }
+        .channel-card { position:relative; transition:transform .22s ease, box-shadow .22s ease, border-color .22s ease; }
+        .channel-card[hidden] { display:none !important; }
+        .favorite-btn {
+            position:absolute; top:10px; right:10px; z-index:3; width:36px; height:36px;
+            display:flex; align-items:center; justify-content:center; border:1px solid rgba(0,0,0,.12);
+            border-radius:50%; background:rgba(255,255,255,.94); color:#7b8491; cursor:pointer;
+            box-shadow:0 3px 12px rgba(0,0,0,.16);
+        }
+        .favorite-btn.is-favorite { color:#e60062; }
+        .favorite-btn:hover { transform:scale(1.08); }
+        .channel-card:focus-within { outline:2px solid var(--primary-color); outline-offset:3px; }
+        .btn-watch { color:#071018; }
+        .empty-state { display:none; padding:28px 16px; text-align:center; color:var(--text-muted); background:var(--card-bg); border:1px dashed rgba(128,128,128,.35); border-radius:14px; }
+        .empty-state i { display:block; font-size:26px; margin-bottom:10px; color:var(--primary-color); }
+        .pwa-note { display:none; margin:16px 0 0; padding:12px 14px; border-radius:12px; background:var(--card-bg); color:var(--text-muted); font-size:12px; }
+        .install-btn { display:none; }
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after { animation-duration:.01ms !important; transition-duration:.01ms !important; scroll-behavior:auto !important; }
+        }
+
+        /* RESPONSIVE LAYOUT UNTUK HANDPHONE (HP) */
+        @media (max-width: 768px) {
+            header {
+                padding: 12px 4%;
+            }
+            .logo {
+                font-size: 18px;
+            }
+            main {
+                padding: 15px 4%;
+            }
+            .hero {
+                padding: 20px 15px;
+                margin-bottom: 20px;
+            }
+            .hero h1 {
+                font-size: 20px;
+            }
+            .hero p {
+                font-size: 12px;
+            }
+            
+            /* Mengubah grid menjadi scroll horizontal layaknya Vision+ asli di HP */
+            .grid-channels {
+                display: flex;
+                overflow-x: auto;
+                scroll-snap-type: x mandatory;
+                padding-bottom: 15px;
+                gap: 15px;
+                scrollbar-width: none; /* Sembunyikan scrollbar di Firefox */
+            }
+
+            .grid-channels::-webkit-scrollbar {
+                display: none; /* Sembunyikan scrollbar di Chrome/Safari */
+            }
+
+            .channel-card {
+                min-width: 150px;
+                max-width: 150px;
+                scroll-snap-align: start;
+                box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            }
+
+            .logo-container {
+                height: 90px;
+                padding: 12px;
+            }
+
+            .channel-name {
+                font-size: 13px;
+            }
+
+            .btn-watch {
+                font-size: 11px;
+                padding: 5px 10px;
+            }
+            .header-actions { gap:5px; }
+            .icon-action { width:38px; height:38px; border-radius:12px; }
+            .hero-slide { min-height:230px; padding:24px 18px 60px; }
+            .hero-slide h1 { font-size:23px; }
+            .hero-slide p { font-size:12px; }
+            .channel-tools { gap:8px; }
+            .search-wrap { flex-basis:100%; }
+            .filter-btn { flex:1; padding:10px 8px; font-size:12px; }
+            .hero-controls { right:12px; bottom:12px; }
+        }
+        @media (min-width: 769px) {
+            .grid-channels { grid-template-columns:repeat(auto-fill,minmax(175px,1fr)); }
+        }
+        @media (max-width: 390px) {
+            .logo { font-size:15px; }
+            .header-actions { gap:3px; }
+            .icon-action { width:34px; height:34px; }
+            .hero-slide h1 { font-size:21px; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo">Vision<span>+</span> Clone</div>
+        <div class="header-actions">
+            <button class="icon-action install-btn" id="installBtn" title="Pasang aplikasi" aria-label="Pasang aplikasi"><i class="fas fa-download"></i></button>
+            <button class="icon-action" id="fullscreenBtn" title="Layar penuh" aria-label="Aktifkan layar penuh"><i class="fas fa-expand"></i></button>
+            <button class="icon-action theme-toggle" id="themeBtn" title="Ubah Mode" aria-label="Ubah mode warna">
+                <i class="fas fa-moon"></i>
+            </button>
+        </div>
+    </header>
+
+    <main>
+        <section class="hero-carousel" id="heroCarousel" aria-label="Banner unggulan">
+            <article class="hero-slide active" style="background-image:linear-gradient(135deg,rgba(0,229,255,.22),rgba(255,0,127,.12)),url('https://images.unsplash.com/photo-1489599849927-2ee91c?auto=format&fit=crop&w=1600&q=80')">
+                <span class="hero-kicker"><i class="fas fa-satellite-dish"></i> Live TV Indonesia</span>
+                <h1>Hiburan dan Informasi dalam Satu Tempat</h1>
+                <p>Temukan kanal TV favorit dengan lebih cepat melalui pencarian dan daftar favorit Anda.</p>
+            </article>
+            <article class="hero-slide" style="background-image:linear-gradient(135deg,rgba(0,229,255,.2),rgba(255,0,127,.12)),url('https://images.unsplash.com/photo-1522869635100-9f4c5e86aa37?auto=format&fit=crop&w=1600&q=80')">
+                <span class="hero-kicker"><i class="fas fa-heart"></i> Pilihan Anda</span>
+                <h1>Kanal Favorit, Lebih Mudah Diakses</h1>
+                <p>Tekan ikon hati pada kartu kanal untuk menyimpan pilihan Anda di perangkat ini.</p>
+            </article>
+            <article class="hero-slide" style="background-image:linear-gradient(135deg,rgba(0,229,255,.2),rgba(255,0,127,.12)),url('https://images.unsplash.com/photo-1593359677879-a4bb92f829d1?auto=format&fit=crop&w=1600&q=80')">
+                <span class="hero-kicker"><i class="fas fa-mobile-screen-button"></i> Nyaman di Semua Perangkat</span>
+                <h1>Tampilan Responsif untuk HP dan Desktop</h1>
+                <p>Gunakan mode layar penuh atau pasang website sebagai aplikasi jika browser mendukungnya.</p>
+            </article>
+            <div class="hero-controls" aria-label="Kontrol banner">
+                <button type="button" id="heroPrev" aria-label="Banner sebelumnya"><i class="fas fa-chevron-left"></i></button>
+                <div class="hero-dots" id="heroDots" aria-label="Pilih banner"></div>
+                <button type="button" id="heroNext" aria-label="Banner berikutnya"><i class="fas fa-chevron-right"></i></button>
+            </div>
+        </section>
+
+        <div class="channel-tools">
+            <div class="search-wrap">
+                <i class="fas fa-search" aria-hidden="true"></i>
+                <input id="channelSearch" type="search" placeholder="Cari kanal TV..." autocomplete="off" aria-label="Cari kanal TV">
+            </div>
+            <button type="button" class="filter-btn active" data-filter="all"><i class="fas fa-tv"></i> Semua kanal</button>
+            <button type="button" class="filter-btn" data-filter="favorites"><i class="fas fa-heart"></i> Favorit <span id="favoriteCount">0</span></button>
+        </div>
+
+        <h2 class="section-title" id="channelHeading">Live TV Nasional</h2>
+        <p class="results-line" id="resultsLine" aria-live="polite">Menampilkan semua kanal</p>
+
+        <div class="grid-channels">
+            
+            <div class="channel-card" data-url="https://www.rctiplus.com/tv/rcti">
+                <button type="button" class="favorite-btn" aria-label="Tambahkan ke favorit" aria-pressed="false" title="Tambahkan ke favorit"><i class="far fa-heart"></i></button>
+                <div class="logo-container">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/c/cb/Logo_RCTI%2B.png" alt="RCTI Logo">
+                </div>
+                <div class="channel-info">
+                    <div class="channel-name">RCTI +</div>
+                    <a href="https://www.rctiplus.com/tv/rcti" target="_blank" rel="noopener noreferrer" class="btn-watch">Tonton</a>
+                </div>
+            </div>
+
+            <div class="channel-card" data-url="https://www.rctiplus.com/tv/mnctv">
+                <button type="button" class="favorite-btn" aria-label="Tambahkan ke favorit" aria-pressed="false" title="Tambahkan ke favorit"><i class="far fa-heart"></i></button>
+                <div class="logo-container">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/6/69/MNCTV_logo.png" alt="MNCTV Logo">
+                </div>
+                <div class="channel-info">
+                    <div class="channel-name">MNCTV</div>
+                    <a href="https://www.rctiplus.com/tv/mnctv" target="_blank" rel="noopener noreferrer" class="btn-watch">Tonton</a>
+                </div>
+            </div>
+
+            <div class="channel-card" data-url="https://www.rctiplus.com/tv/gtv">
+                <button type="button" class="favorite-btn" aria-label="Tambahkan ke favorit" aria-pressed="false" title="Tambahkan ke favorit"><i class="far fa-heart"></i></button>
+                <div class="logo-container">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/9/9c/GTV_%282017%29.svg" alt="GTV Logo">
+                </div>
+                <div class="channel-info">
+                    <div class="channel-name">GTV</div>
+                    <a href="https://www.rctiplus.com/tv/gtv" target="_blank" rel="noopener noreferrer" class="btn-watch">Tonton</a>
+                </div>
+            </div>
+
+            <div class="channel-card" data-url="https://www.tvonenews.com/live">
+                <button type="button" class="favorite-btn" aria-label="Tambahkan ke favorit" aria-pressed="false" title="Tambahkan ke favorit"><i class="far fa-heart"></i></button>
+                <div class="logo-container">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/9/91/TvOne_2023.svg" alt="tvOne Logo">
+                </div>
+                <div class="channel-info">
+                    <div class="channel-name">tvOne</div>
+                    <a href="https://www.tvonenews.com/live" target="_blank" rel="noopener noreferrer" class="btn-watch">Tonton</a>
+                </div>
+            </div>
+
+            <div class="channel-card" data-url="https://www.transtv.co.id/live">
+                <button type="button" class="favorite-btn" aria-label="Tambahkan ke favorit" aria-pressed="false" title="Tambahkan ke favorit"><i class="far fa-heart"></i></button>
+                <div class="logo-container">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/c/c2/Logo_Trans_TV.png" alt="Trans TV Logo">
+                </div>
+                <div class="channel-info">
+                    <div class="channel-name">Trans TV</div>
+                    <a href="https://www.transtv.co.id/live" target="_blank" rel="noopener noreferrer" class="btn-watch">Tonton</a>
+                </div>
+            </div>
+
+            <div class="channel-card" data-url="http://klik.tvri.go.id">
+                <button type="button" class="favorite-btn" aria-label="Tambahkan ke favorit" aria-pressed="false" title="Tambahkan ke favorit"><i class="far fa-heart"></i></button>
+                <div class="logo-container">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/e/eb/TVRILogo2019.svg" alt="TVRI Logo">
+                </div>
+                <div class="channel-info">
+                    <div class="channel-name">TVRI</div>
+                    <a href="http://klik.tvri.go.id" target="_blank" rel="noopener noreferrer" class="btn-watch">Tonton</a>
+                </div>
+            </div>
+
+            <div class="channel-card" data-url="https://www.metrotvnews.com/live">
+                <button type="button" class="favorite-btn" aria-label="Tambahkan ke favorit" aria-pressed="false" title="Tambahkan ke favorit"><i class="far fa-heart"></i></button>
+                <div class="logo-container">
+                    <img src="https://i.pinimg.com/originals/c8/e1/b9/c8e1b922feffed99346980caf84e42e3.png" alt="Metro TV Logo">
+                </div>
+                <div class="channel-info">
+                    <div class="channel-name">Metro TV</div>
+                    <a href="https://www.metrotvnews.com/live" target="_blank" rel="noopener noreferrer" class="btn-watch">Tonton</a>
+                </div>
+            </div>
+
+            <div class="channel-card" data-url="https://www.trans7.co.id/live-streaming">
+                <button type="button" class="favorite-btn" aria-label="Tambahkan ke favorit" aria-pressed="false" title="Tambahkan ke favorit"><i class="far fa-heart"></i></button>
+                <div class="logo-container">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/9/96/Logo_Trans7.png" alt="Trans 7 Logo">
+                </div>
+                <div class="channel-info">
+                    <div class="channel-name">Trans 7</div>
+                    <a href="https://www.trans7.co.id/live-streaming" target="_blank" rel="noopener noreferrer" class="btn-watch">Tonton</a>
+                </div>
+            </div>
+
+            <div class="channel-card" data-url="https://www.kompas.tv/live">
+                <button type="button" class="favorite-btn" aria-label="Tambahkan ke favorit" aria-pressed="false" title="Tambahkan ke favorit"><i class="far fa-heart"></i></button>
+                <div class="logo-container">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/e/eb/Kompas_TV_%282011%29_logo.svg" alt="Kompas TV Logo">
+                </div>
+                <div class="channel-info">
+                    <div class="channel-name">Kompas TV</div>
+                    <a href="https://www.kompas.tv/live" target="_blank" rel="noopener noreferrer" class="btn-watch">Tonton</a>
+                </div>
+            </div>
+
+            <div class="channel-card" data-url="https://www.netmedia.co.id/live-streaming">
+                <button type="button" class="favorite-btn" aria-label="Tambahkan ke favorit" aria-pressed="false" title="Tambahkan ke favorit"><i class="far fa-heart"></i></button>
+                <div class="logo-container">
+                    <img src="https://sapibagus.com/wp-content/uploads/2015/11/logo-Net-tv.png" alt="NET TV Logo">
+                </div>
+                <div class="channel-info">
+                    <div class="channel-name">NET TV</div>
+                    <a href="https://www.netmedia.co.id/live-streaming" target="_blank" rel="noopener noreferrer" class="btn-watch">Tonton</a>
+                </div>
+            </div>
+
+            <div class="channel-card" data-url="https://www.inews.id/streaming">
+                <button type="button" class="favorite-btn" aria-label="Tambahkan ke favorit" aria-pressed="false" title="Tambahkan ke favorit"><i class="far fa-heart"></i></button>
+                <div class="logo-container">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/0/09/INews.png" alt="iNews Logo">
+                </div>
+                <div class="channel-info">
+                    <div class="channel-name">iNews</div>
+                    <a href="https://www.inews.id/streaming" target="_blank" rel="noopener noreferrer" class="btn-watch">Tonton</a>
+                </div>
+            </div>
+
+            <div class="channel-card" data-url="https://idn279.tigoals233.com/">
+                <button type="button" class="favorite-btn" aria-label="Tambahkan ke favorit" aria-pressed="false" title="Tambahkan ke favorit"><i class="far fa-heart"></i></button>
+                <div class="logo-container">
+                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSNBUdGhJoRoGqQAKTsm7zJezpdxXOwdlgqHfJ4Ui4QaQ&s=10" alt="TIGOALS Logo">
+                </div>
+                <div class="channel-info">
+                    <div class="channel-name">Tigoals</div>
+                    <a href="https://idn279.tigoals233.com/" target="_blank" rel="noopener noreferrer" class="btn-watch">Tonton</a>
+                </div>
+            </div>
+
+        </div>
+        <div class="empty-state" id="emptyState"><i class="fas fa-tv"></i><strong>Kanal tidak ditemukan</strong><p>Coba kata kunci lain atau pilih Semua kanal.</p></div>
+        <p class="pwa-note" id="pwaNote">Untuk memasang aplikasi, buka website melalui HTTPS atau localhost pada browser yang mendukung PWA.</p>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 Vision+ Clone. Dibuat untuk keperluan simulasi streaming.</p>
+    </footer>
+
+    <script>
+        (() => {
+            const body = document.body;
+            const themeBtn = document.getElementById('themeBtn');
+            const themeIcon = themeBtn.querySelector('i');
+            const fullscreenBtn = document.getElementById('fullscreenBtn');
+            const fullscreenIcon = fullscreenBtn.querySelector('i');
+            const searchInput = document.getElementById('channelSearch');
+            const cards = [...document.querySelectorAll('.channel-card')];
+            const filterButtons = [...document.querySelectorAll('.filter-btn')];
+            const emptyState = document.getElementById('emptyState');
+            const resultsLine = document.getElementById('resultsLine');
+            const favoriteCount = document.getElementById('favoriteCount');
+            const channelHeading = document.getElementById('channelHeading');
+            const slides = [...document.querySelectorAll('.hero-slide')];
+            const dotsContainer = document.getElementById('heroDots');
+            let activeFilter = 'all';
+            let activeSlide = 0;
+            let carouselTimer;
+            const storage = {
+                get(key, fallback) {
+                    try { const v = localStorage.getItem(key); return v === null ? fallback : v; }
+                    catch (e) { return fallback; }
+                },
+                set(key, value) {
+                    try { localStorage.setItem(key, value); } catch (e) {}
+                }
+            };
+
+            // Tema tersimpan di perangkat.
+            const savedTheme = storage.get('visionplus-theme', 'dark');
+            if (savedTheme === 'light') body.setAttribute('data-theme', 'light');
+            updateThemeIcon();
+            function updateThemeIcon() {
+                const light = body.getAttribute('data-theme') === 'light';
+                themeIcon.className = light ? 'fas fa-sun' : 'fas fa-moon';
+                themeBtn.title = light ? 'Gunakan mode gelap' : 'Gunakan mode terang';
+                themeBtn.setAttribute('aria-label', themeBtn.title);
+            }
+            themeBtn.addEventListener('click', () => {
+                const light = body.getAttribute('data-theme') === 'light';
+                if (light) body.removeAttribute('data-theme');
+                else body.setAttribute('data-theme', 'light');
+                storage.set('visionplus-theme', light ? 'dark' : 'light');
+                updateThemeIcon();
+            });
+
+            // Fullscreen dengan fallback pesan bila browser tidak mendukung.
+            fullscreenBtn.addEventListener('click', async () => {
+                try {
+                    if (!document.fullscreenElement) {
+                        if (document.documentElement.requestFullscreen) await document.documentElement.requestFullscreen();
+                        else { alert('Browser ini belum mendukung mode layar penuh.'); return; }
+                    } else if (document.exitFullscreen) {
+                        await document.exitFullscreen();
+                    }
+                } catch (error) {
+                    alert('Mode layar penuh tidak dapat diaktifkan pada browser ini.');
+                }
+            });
+            function updateFullscreenIcon() {
+                const isFull = Boolean(document.fullscreenElement);
+                fullscreenIcon.className = isFull ? 'fas fa-compress' : 'fas fa-expand';
+                fullscreenBtn.title = isFull ? 'Keluar dari layar penuh' : 'Layar penuh';
+                fullscreenBtn.setAttribute('aria-label', fullscreenBtn.title);
+            }
+            document.addEventListener('fullscreenchange', updateFullscreenIcon);
+
+            // Favorit disimpan lokal, tidak dikirim ke server.
+            const favoriteKey = 'visionplus-favorites';
+            let favorites = [];
+            try { favorites = JSON.parse(storage.get(favoriteKey, '[]')); if (!Array.isArray(favorites)) favorites = []; }
+            catch (e) { favorites = []; }
+            function cardName(card) { return card.querySelector('.channel-name')?.textContent.trim() || ''; }
+            function updateFavoriteButtons() {
+                cards.forEach(card => {
+                    const name = cardName(card);
+                    const btn = card.querySelector('.favorite-btn');
+                    const isFavorite = favorites.includes(name);
+                    btn.classList.toggle('is-favorite', isFavorite);
+                    btn.setAttribute('aria-pressed', String(isFavorite));
+                    btn.setAttribute('aria-label', isFavorite ? 'Hapus dari favorit' : 'Tambahkan ke favorit');
+                    btn.title = isFavorite ? 'Hapus dari favorit' : 'Tambahkan ke favorit';
+                    btn.querySelector('i').className = isFavorite ? 'fas fa-heart' : 'far fa-heart';
+                });
+                favoriteCount.textContent = favorites.length;
+            }
+            cards.forEach(card => {
+                const btn = card.querySelector('.favorite-btn');
+                btn.addEventListener('click', event => {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    const name = cardName(card);
+                    favorites = favorites.includes(name) ? favorites.filter(item => item !== name) : [...favorites, name];
+                    storage.set(favoriteKey, JSON.stringify(favorites));
+                    updateFavoriteButtons();
+                    applyFilters();
+                });
+            });
+            updateFavoriteButtons();
+
+            // Pencarian dan filter kanal.
+            function applyFilters() {
+                const query = searchInput.value.trim().toLocaleLowerCase('id-ID');
+                let visible = 0;
+                cards.forEach(card => {
+                    const name = cardName(card).toLocaleLowerCase('id-ID');
+                    const matchesQuery = name.includes(query);
+                    const matchesFilter = activeFilter === 'all' || favorites.includes(cardName(card));
+                    const show = matchesQuery && matchesFilter;
+                    card.hidden = !show;
+                    if (show) visible++;
+                });
+                emptyState.style.display = visible ? 'none' : 'block';
+                resultsLine.textContent = activeFilter === 'favorites'
+                    ? `${visible} kanal favorit${query ? ' cocok dengan pencarian' : ''}`
+                    : `${visible} dari ${cards.length} kanal ditampilkan`;
+                channelHeading.textContent = activeFilter === 'favorites' ? 'Kanal Favorit' : 'Live TV Nasional';
+            }
+            searchInput.addEventListener('input', applyFilters);
+            filterButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    activeFilter = button.dataset.filter;
+                    filterButtons.forEach(btn => btn.classList.toggle('active', btn === button));
+                    applyFilters();
+                });
+            });
+            applyFilters();
+
+            // Banner carousel otomatis dan bisa dikendalikan pengguna.
+            slides.forEach((slide, index) => {
+                const dot = document.createElement('button');
+                dot.type = 'button';
+                dot.setAttribute('aria-label', `Tampilkan banner ${index + 1}`);
+                dot.addEventListener('click', () => showSlide(index, true));
+                dotsContainer.appendChild(dot);
+            });
+            function showSlide(index, resetTimer = false) {
+                activeSlide = (index + slides.length) % slides.length;
+                slides.forEach((slide, i) => slide.classList.toggle('active', i === activeSlide));
+                [...dotsContainer.children].forEach((dot, i) => {
+                    dot.classList.toggle('active', i === activeSlide);
+                    dot.setAttribute('aria-current', i === activeSlide ? 'true' : 'false');
+                });
+                if (resetTimer) startCarousel();
+            }
+            function startCarousel() {
+                clearInterval(carouselTimer);
+                if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                    carouselTimer = setInterval(() => showSlide(activeSlide + 1), 6000);
+                }
+            }
+            document.getElementById('heroPrev').addEventListener('click', () => showSlide(activeSlide - 1, true));
+            document.getElementById('heroNext').addEventListener('click', () => showSlide(activeSlide + 1, true));
+            const carousel = document.getElementById('heroCarousel');
+            carousel.addEventListener('mouseenter', () => clearInterval(carouselTimer));
+            carousel.addEventListener('mouseleave', startCarousel);
+            carousel.addEventListener('focusin', () => clearInterval(carouselTimer));
+            carousel.addEventListener('focusout', startCarousel);
+            showSlide(0);
+            startCarousel();
+
+            // Tombol instalasi PWA (muncul jika browser menawarkan instalasi).
+            let deferredInstallPrompt = null;
+            const installBtn = document.getElementById('installBtn');
+            const pwaNote = document.getElementById('pwaNote');
+            window.addEventListener('beforeinstallprompt', event => {
+                event.preventDefault();
+                deferredInstallPrompt = event;
+                installBtn.style.display = 'inline-flex';
+            });
+            installBtn.addEventListener('click', async () => {
+                if (!deferredInstallPrompt) {
+                    pwaNote.style.display = 'block';
+                    return;
+                }
+                deferredInstallPrompt.prompt();
+                await deferredInstallPrompt.userChoice;
+                deferredInstallPrompt = null;
+                installBtn.style.display = 'none';
+            });
+            window.addEventListener('appinstalled', () => {
+                installBtn.style.display = 'none';
+                pwaNote.style.display = 'none';
+            });
+            if ('serviceWorker' in navigator && /^https?:$/.test(location.protocol)) {
+                window.addEventListener('load', () => {
+                    navigator.serviceWorker.register('./sw.js').catch(() => {
+                        // PWA memerlukan HTTPS atau localhost; halaman tetap dapat digunakan bila SW gagal.
+                    });
+                });
+            }
+        })();
+    </script>
+</body>
+</html>
